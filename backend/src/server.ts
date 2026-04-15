@@ -2,7 +2,7 @@ import Fastify from "fastify";
 
 const app = Fastify();
 
-// Test route
+// Hello
 app.get("/hello", async (request, reply) => {
     return {message: "Whats up World"};
 });
@@ -10,6 +10,15 @@ app.get("/hello", async (request, reply) => {
 // Ping-Pong
 app.get("/ping", async (request, reply) => {
     return {message: "Pong"};
+});
+
+app.get("/info", async (request, reply) => {
+    const message = new Date().toISOString();
+    return {
+        name: "Secure Notes API",
+        version: "0.0.1",
+        timestamp: message
+    };
 });
 
 // Start server
