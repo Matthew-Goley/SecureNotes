@@ -2,22 +2,27 @@ import Fastify from "fastify";
 
 const app = Fastify();
 
-// Hello
-app.get("/hello", async (request, reply) => {
-    return {message: "Whats up World"};
-});
-
-// Ping-Pong
-app.get("/ping", async (request, reply) => {
-    return {message: "Pong"};
-});
-
-app.get("/info", async (request, reply) => {
+// Time GET
+app.get("/info", async () => {
     const message = new Date().toISOString();
     return {
         name: "Secure Notes API",
         version: "0.0.1",
         timestamp: message
+    };
+});
+
+// Echo POST
+app.post("/echo", async (request, reply) => {
+    return request.body;
+});
+
+// Greet POST
+app.post("/greet", async (request, reply) => {
+    const { name } = request.body as { name: string};
+
+    return {
+        message: `Hello: ${name}`
     };
 });
 
