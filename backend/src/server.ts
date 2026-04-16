@@ -1,4 +1,5 @@
 import Fastify from "fastify";
+import bcrypt from "bcrypt";
 
 const app = Fastify();
 
@@ -49,8 +50,9 @@ app.post("/signup", async (request, reply) => {
         };
     }
     
-    // Create User
-    users.push({ username, password });
+    // Create User and encrypt
+    const hashedPassword = await bcrypt.hash(password, 10);
+    users.push({ username, password: hashedPassword });
 
     return {
         success: true,
@@ -76,8 +78,10 @@ app.post("/login", async (request, reply) => {
             message: "User Not Found"
         };
     }
-
-    if (user.password !== password) {
+    
+    // Compare dehashed password
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
         return {
             success: false,
             message: "Invalid Password"
