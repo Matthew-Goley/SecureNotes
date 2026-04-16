@@ -14,6 +14,14 @@ app.get("/info", async () => {
     };
 });
 
+// UserList GET (For debugging)
+app.get("/userlist", async () => {
+    const userlist = users;
+    return {
+        users: userlist
+    };
+});
+
 // Signup POST
 app.post("/signup", async (request, reply) => {
     const { username, password } = request.body as { 
@@ -48,6 +56,37 @@ app.post("/signup", async (request, reply) => {
         success: true,
         message: "User Created",
         totalUsers: users.length
+    };
+});
+
+// Login POST
+app.post("/login", async (request, reply) => {
+    const { username, password } = request.body as {
+        username: string,
+        password: string
+    };
+
+    const user = users.find(
+        user => user.username === username
+    );
+
+    if (!user) {
+        return {
+            success: false,
+            message: "User Not Found"
+        };
+    }
+
+    if (user.password !== password) {
+        return {
+            success: false,
+            message: "Invalid Password"
+        };
+    }
+
+    return {
+        success: true,
+        message: "Login Successful"
     };
 });
 
