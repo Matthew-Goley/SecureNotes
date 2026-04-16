@@ -2,6 +2,8 @@ import Fastify from "fastify";
 
 const app = Fastify();
 
+const users: { username: string, password: string}[] = [];
+
 // Time GET
 app.get("/info", async () => {
     const message = new Date().toISOString();
@@ -12,17 +14,40 @@ app.get("/info", async () => {
     };
 });
 
-// Echo POST
-app.post("/echo", async (request, reply) => {
-    return request.body;
-});
+// Signup POST
+app.post("/signup", async (request, reply) => {
+    const { username, password } = request.body as { 
+        username: string;
+        password: string;
+    }
 
-// Greet POST
-app.post("/greet", async (request, reply) => {
-    const { name } = request.body as { name: string};
+    // Check Empty
+    if (!username || !password) {
+        return {
+            success: false,
+            message: "Username and Password Required"
+        };
+    }
+
+    // Check Duplicate
+    const existingUser = users.find(
+        user => user.username === username
+    );
+
+    if (existingUser) {
+        return {
+            success: false,
+            message: "Username Already in Use"
+        };
+    }
+    
+    // Create User
+    users.push({ username, password });
 
     return {
-        message: `Hello: ${name}`
+        success: true,
+        message: "User Created",
+        totalUsers: users.length
     };
 });
 
