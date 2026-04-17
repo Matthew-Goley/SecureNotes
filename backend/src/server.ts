@@ -1,7 +1,20 @@
 import Fastify from "fastify";
+import Database from "better-sqlite3";
 import bcrypt from "bcrypt";
 
 const app = Fastify();
+
+// TEST SQLite
+const db = new Database("users.db"); // creates the file if it doesnt already exist
+
+// Run at startup to create the table
+db.exec(`
+    CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT UNIQUE NOT NULL,
+        password TEXT NOT NULL
+    )
+`);
 
 const users: { username: string, password: string}[] = [];
 
