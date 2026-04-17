@@ -2,6 +2,7 @@ import Fastify from "fastify";
 import Database from "better-sqlite3";
 import bcrypt from "bcrypt";
 import { hash } from "node:crypto";
+import { ALL } from "node:dns";
 
 const app = Fastify();
 
@@ -17,8 +18,6 @@ db.exec(`
     )
 `);
 
-const users: { username: string, password: string}[] = [];
-
 // Time GET
 app.get("/info", async () => {
     const message = new Date().toISOString();
@@ -31,7 +30,7 @@ app.get("/info", async () => {
 
 // UserList GET (For debugging)
 app.get("/userlist", async () => {
-    const userlist = users;
+    const userlist = db.prepare("SELECT * FROM users").all();
     return {
         users: userlist
     };
