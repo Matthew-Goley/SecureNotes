@@ -1,11 +1,12 @@
 import Fastify from "fastify";
 import Database from "better-sqlite3";
 import bcrypt from "bcrypt";
+import { hash } from "node:crypto";
 
 const app = Fastify();
 
 // TEST SQLite
-const db = new Database("users.db"); // creates the file if it doesnt already exist
+const db = new Database("../database/users.db"); // creates the file if it doesnt already exist
 
 // Run at startup to create the table
 db.exec(`
@@ -52,9 +53,7 @@ app.post("/signup", async (request, reply) => {
     }
 
     // Check Duplicate
-    const existingUser = users.find(
-        user => user.username === username
-    );
+    const existingUser = db.prepare("SELECT * FROM users WHERE username = ?").get(username);
 
     if (existingUser) {
         return {
@@ -65,12 +64,13 @@ app.post("/signup", async (request, reply) => {
     
     // Create User and encrypt
     const hashedPassword = await bcrypt.hash(password, 10);
-    users.push({ username, password: hashedPassword });
+
+    // Push to db
+    db.prepare("INSERT INTO users (username, password) VALUES (?, ?)").run(username, hashedPassword);
 
     return {
         success: true,
         message: "User Created",
-        totalUsers: users.length
     };
 });
 
@@ -81,9 +81,7 @@ app.post("/login", async (request, reply) => {
         password: string
     };
 
-    const user = users.find(
-        user => user.username === username
-    );
+    const user = db.prepare("SELECT * FROM users WHERE username = ?").get(username) as { id: number; username: string; password: string } | undefined;
 
     if (!user) {
         return {
