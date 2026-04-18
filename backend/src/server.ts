@@ -1,13 +1,33 @@
 import Fastify from "fastify";
 import Database from "better-sqlite3";
+import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import { hash } from "node:crypto";
-import { ALL } from "node:dns";
 
 const app = Fastify();
 
-// TEST SQLite
+const JWT_SECRET = "your-secret-key-idk-tbh";
+
+// SQLite table
 const db = new Database("../database/users.db"); // creates the file if it doesnt already exist
+
+// Authenticate func
+const authenticate = async (request: any, reply: any) => {
+    const authHeader = request.headers["authorization"];
+
+    if (!authHeader) {
+        return reply.status(401).send({ success: false, message: "No token provided" });
+
+    }
+
+    const token = authHeader.split(" ")[1]; // pulls token out of "Bearer <token>"
+
+    try {
+        const decoded = jwt.verify(token, JWT_SECRET) as { id: number; username: string };
+        request.user = decoded; // attach user info to request
+    } catch {
+        return reply.status(401).send({ success: false, message: "Invalid or expired token" });
+    }
+};
 
 // Run at startup to create the table
 db.exec(`
@@ -69,8 +89,8 @@ app.post("/signup", async (request, reply) => {
 
     return {
         success: true,
-        message: "User Created",
-    };
+        message: "User Created"
+    }
 });
 
 // Login POST
@@ -98,10 +118,23 @@ app.post("/login", async (request, reply) => {
         };
     }
 
+    // Token
+    const token = jwt.sign(
+        { id: user.id, username: user.username},
+        JWT_SECRET,
+        { expiresIn: "7d"}
+    );
+
     return {
         success: true,
-        message: "Login Successful"
+        message: "Login Successful",
+        token: token
     };
+});
+
+// Protected route
+app.get("/protected", { preHandler: authenticate }, async (request: any) => {
+    return { message: `Hello ${request.user.username}` };
 });
 
 // Start server
