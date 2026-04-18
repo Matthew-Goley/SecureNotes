@@ -2,7 +2,6 @@ import Fastify from "fastify";
 import Database from "better-sqlite3";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import { request } from "node:http";
 
 const app = Fastify();
 
