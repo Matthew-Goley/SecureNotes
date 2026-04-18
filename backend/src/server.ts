@@ -1,5 +1,6 @@
 import Fastify from "fastify";
 import rateLimit from "@fastify/rate-limit";
+import cors from "@fastify/cors";
 import "dotenv/config";
 
 import authRoutes from "./routes/auth";
@@ -9,8 +10,12 @@ import debugRoutes from "./routes/debug";
 const app = Fastify();
 
 app.register(rateLimit, {
-    max: 20,        // max requests
+    max: 20,
     timeWindow: 60000  // per 60 seconds (in milliseconds)
+});
+
+app.register(cors, {
+    origin: "http://127.0.0.1:5500"
 });
 
 app.register(authRoutes);
