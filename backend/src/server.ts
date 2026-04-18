@@ -2,6 +2,7 @@ import Fastify from "fastify";
 import Database from "better-sqlite3";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import { request } from "node:http";
 
 const app = Fastify();
 
@@ -99,7 +100,7 @@ app.post("/signup", async (request, reply) => {
     return {
         success: true,
         message: "User Created"
-    }
+    };
 });
 
 // Login POST
@@ -145,6 +146,21 @@ app.post("/login", async (request, reply) => {
 app.get("/protected", { preHandler: authenticate }, async (request: any) => {
     return { message: `Hello ${request.user.username}` };
 });
+
+// Notes (protected)
+app.post("/notes", { preHandler: authenticate }, async (request: any) => {
+    const { title, content } = request.body as {
+        title: string;
+        content: string;
+    }
+
+    db.prepare("INSERT INTO notes (user_id, title, content) VALUES (?, ?, ?)").run(request.user.id, title, content);
+
+    return {
+        success: true,
+        message: "Note Inserted"
+    };
+})
 
 // Start server
 const start = async () => {
