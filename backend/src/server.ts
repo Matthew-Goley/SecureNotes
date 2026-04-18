@@ -171,6 +171,18 @@ app.get("/getnotes", { preHandler: authenticate }, async (request: any) => {
     };
 })
 
+// delete notes (protected)
+app.delete("/notes/:id", { preHandler: authenticate }, async (request: any) => {
+    const { id } = request.params;
+
+    db.prepare("DELETE FROM notes WHERE id = ? AND user_id = ?").run(id, request.user.id);
+
+    return {
+        success: true,
+        noteDeleted: id
+    };
+});
+
 // Start server
 const start = async () => {
     try {
