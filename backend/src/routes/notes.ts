@@ -16,7 +16,7 @@ export default async function noteRoutes(app: FastifyInstance) {
             success: true,
             message: "Note Inserted"
         };
-    })
+    });
     
     // Get Notes (protected)
     app.get("/getnotes", { preHandler: authenticate }, async (request: any) => {
@@ -26,7 +26,7 @@ export default async function noteRoutes(app: FastifyInstance) {
             success: true,
             notes: userNotes
         };
-    })
+    });
     
     // delete notes (protected)
     app.delete("/notes/:id", { preHandler: authenticate }, async (request: any) => {
@@ -37,6 +37,22 @@ export default async function noteRoutes(app: FastifyInstance) {
         return {
             success: true,
             noteDeleted: id
+        };
+    });
+
+    // update notes (protected)
+    app.patch("/notes/:id", { preHandler: authenticate }, async (request: any) => {
+        const { title, content } = request.body as {
+            title: string,
+            content: string
+        };
+        const { id } = request.params;
+
+        db.prepare("UPDATE notes SET title = ?, content = ? WHERE id = ? and user_id = ?").run(title, content, id, request.user.id);
+
+        return {
+            success: true,
+            message: "Note Updated"
         };
     });
 }
