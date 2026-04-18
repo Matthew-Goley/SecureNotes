@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Secure Notes</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="auth-section">
+    <h2>Login / Signup</h2>
+    <input type="text" id="username" placeholder="Username">
+    <input type="password" id="password" placeholder="Password">
+    <button id="login-btn">Login</button>
+    <button id="signup-btn">Signup</button>
+  </div>
+
+  <div id="notes-section" style="display:none;">
+    <h2>My Notes</h2>
+    <input type="text" id="note-title" placeholder="Title">
+    <textarea id="note-content" placeholder="Write your note..."></textarea>
+    <button id="add-note-btn">Add Note</button>
+    <ul id="notes-list"></ul>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
