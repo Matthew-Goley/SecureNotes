@@ -161,6 +161,16 @@ app.post("/notes", { preHandler: authenticate }, async (request: any) => {
     };
 })
 
+// Get Notes (protected)
+app.get("/getnotes", { preHandler: authenticate }, async (request: any) => {
+    const userNotes = db.prepare("SELECT * FROM notes WHERE user_id = ?").all(request.user.id);
+
+    return {
+        success: true,
+        notes: userNotes
+    };
+})
+
 // Start server
 const start = async () => {
     try {
