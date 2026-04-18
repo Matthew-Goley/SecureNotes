@@ -1,9 +1,17 @@
 import Fastify from "fastify";
+import rateLimit from "@fastify/rate-limit";
+import "dotenv/config";
+
 import authRoutes from "./routes/auth";
 import noteRoutes from "./routes/notes";
 import debugRoutes from "./routes/debug";
 
 const app = Fastify();
+
+app.register(rateLimit, {
+    max: 20,        // max requests
+    timeWindow: 60000  // per 60 seconds (in milliseconds)
+});
 
 app.register(authRoutes);
 app.register(noteRoutes);

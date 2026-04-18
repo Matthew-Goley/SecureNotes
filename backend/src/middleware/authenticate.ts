@@ -1,7 +1,7 @@
 // middleware/authenticate.ts
 import jwt from "jsonwebtoken";
 
-const JWT_SECRET = "your-secret-key-idk-tbh";
+const JWT_SECRET = process.env.JWT_SECRET as string;
 
 // Authenticate func
 export const authenticate = async (request: any, reply: any) => {
