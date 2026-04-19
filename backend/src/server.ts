@@ -10,12 +10,13 @@ import debugRoutes from "./routes/debug";
 const app = Fastify();
 
 app.register(rateLimit, {
-    max: 20,
+    max: 20, 
     timeWindow: 60000  // per 60 seconds (in milliseconds)
 });
 
 app.register(cors, {
-    origin: "http://127.0.0.1:5500"
+    origin: "http://127.0.0.1:5500",
+    methods: ["GET", "POST", "DELETE", "PATCH"]
 });
 
 app.register(authRoutes);
